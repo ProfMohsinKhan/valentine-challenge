@@ -192,3 +192,179 @@ input {
   overflow: hidden;
   background: var(--bg-gradient); /* Now dynamic based on theme */
 }
+
+/* --- GLOBAL LOVE WALL CONTAINER --- */
+.wall-container {
+  background: rgba(255, 255, 255, 0.5); /* Semi-transparent default */
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 400px; /* matches your main card width */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid var(--input-border);
+}
+
+/* Dark mode specific override for the wall background */
+@media (prefers-color-scheme: dark) {
+  .wall-container {
+    background: rgba(30, 30, 30, 0.6);
+  }
+}
+
+/* --- HEADER --- */
+.wall-header h3 {
+  margin: 0 0 5px 0;
+  color: var(--dark-pink);
+  font-size: 1.2rem;
+}
+
+.wall-header p {
+  margin: 0 0 15px 0;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  font-weight: 500;
+}
+
+/* --- SCROLLING LIST AREA --- */
+.scrolling-list {
+  max-height: 250px; /* Limits height so it scrolls internally */
+  overflow-y: auto;  /* Enables vertical scrolling */
+  padding-right: 5px; /* Space for scrollbar */
+  
+  /* Custom Scrollbar Styling */
+  scrollbar-width: thin;
+  scrollbar-color: var(--dark-pink) transparent;
+}
+
+/* Webkit Scrollbar (Chrome/Safari) */
+.scrolling-list::-webkit-scrollbar {
+  width: 6px;
+}
+.scrolling-list::-webkit-scrollbar-thumb {
+  background-color: var(--dark-pink);
+  border-radius: 10px;
+}
+.scrolling-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --- LIST ITEMS (TABLE ROW LOOK) --- */
+.match-item {
+  display: flex;
+  justify-content: space-between; /* Pushes names to left, score to right */
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--input-border);
+  font-size: 0.95rem;
+}
+
+.match-item:last-child {
+  border-bottom: none; /* Remove border from last item */
+}
+
+/* --- NAMES COLUMN --- */
+.match-names {
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: left;
+  /* Flex magic for long names */
+  flex: 1; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
+}
+
+/* --- SCORE COLUMN --- */
+.match-score {
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 70px; /* Ensures scores align vertically */
+  text-align: right;
+}
+
+.empty-msg {
+  color: var(--text-color);
+  font-style: italic;
+  opacity: 0.7;
+  margin-top: 20px;
+}
+
+/* --- MOBILE SPECIFIC TWEAKS --- */
+@media (max-width: 400px) {
+  .wall-container {
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .wall-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .match-item {
+    font-size: 0.85rem; /* Slightly smaller text on tiny screens */
+    padding: 8px 0;
+  }
+  
+  .match-score {
+    font-size: 0.9rem;
+  }
+}
+
+/* --- FILTER BUTTONS --- */
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.filter-buttons button {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  padding: 5px 15px;
+  font-size: 0.8rem;
+  border-radius: 20px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-buttons button:hover {
+  background: var(--pastel-pink);
+  color: #000;
+  opacity: 1;
+}
+
+/* Active State (Selected Button) */
+.filter-buttons button.active-filter {
+  background: var(--dark-pink);
+  color: white;
+  border-color: var(--dark-pink);
+  opacity: 1;
+  font-weight: bold;
+}
+
+.counter-text {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin: 0 0 10px 0;
+}
+
+/* --- PERFECT SCORE (100%) STYLING --- */
+.perfect-match {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0));
+  border-left: 4px solid #ffd700; /* Gold border on left */
+  padding-left: 8px !important; /* Adjust padding for the border */
+}
+
+/* Dark mode adjustment for perfect match bg */
+@media (prefers-color-scheme: dark) {
+  .perfect-match {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(0, 0, 0, 0));
+  }
+}
