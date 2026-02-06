@@ -9,13 +9,29 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* Prevents scrolling during animations */
+  overflow: hidden;
+  
+  /* 👇 ADD THIS LINE */
+  color: #333333; /* Forces text to be dark grey/black */
+  background-color: white; /* Fallback background */
 }
 
+/* Re-apply your specific pink colors for specific classes */
+.question-text {
+  color: #be185d !important; /* The !important forces this pink over the grey */
+}
+
+.text-emotional {
+  color: #e11d48 !important;
+}
+/* Add this anywhere in App.css */
+h1, h2, h3, h4, h5, h6, p, span {
+  color: inherit; /* This forces them to listen to the body color */
+}
 .app-container {
   text-align: center;
   padding: 15px;
