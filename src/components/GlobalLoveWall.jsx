@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebase"; // Adjust path if needed
+import { db } from "../firebase"; 
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { motion } from "framer-motion";
 
 const GlobalLoveWall = () => {
   const [matches, setMatches] = useState([]);
   const [totalCalculations, setTotalCalculations] = useState(0);
+  
+  // NEW: State to track which filter is active ('score' or 'createdAt')
+  const [sortBy, setSortBy] = useState("score"); 
 
   useEffect(() => {
-    // 1. Create a query to get the last 20 matches
+    // 1. Dynamic Query based on 'sortBy' state
     const q = query(
       collection(db, "matches"),
-      orderBy("score", "desc"),
+      orderBy(sortBy, "desc"), // This switches between 'score' and 'createdAt'
       limit(20)
     );
 
-    // 2. Listen for real-time updates (onSnapshot)
+    // 2. Listen for real-time updates
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedMatches = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -23,14 +26,12 @@ const GlobalLoveWall = () => {
       }));
       setMatches(fetchedMatches);
       
-      // OPTIONAL: Fake a "Total Count" based on list size + generic number
-      // (For a real total count, you'd need a separate counter in Firebase)
+      // Fake total count logic
       setTotalCalculations(fetchedMatches.length + 1400); 
     });
 
-    // Cleanup listener when component unmounts
     return () => unsubscribe();
-  }, []);
+  }, [sortBy]); // <--- IMPORTANT: Re-run this effect when 'sortBy' changes
 
   return (
     <motion.div 
@@ -40,14 +41,32 @@ const GlobalLoveWall = () => {
     >
       <div className="wall-header">
         <h3>🌍 Global Wall of Love</h3>
-        <p>{totalCalculations} couples tested so far!</p>
+        
+        {/* --- NEW: Filter Buttons --- */}
+        <div className="filter-buttons">
+          <button 
+            className={sortBy === "score" ? "active" : ""} 
+            onClick={() => setSortBy("score")}
+          >
+            🔥 Top Scores
+          </button>
+          <button 
+            className={sortBy === "createdAt" ? "active" : ""} 
+            onClick={() => setSortBy("createdAt")}
+          >
+            🕒 Most Recent
+          </button>
+        </div>
+
+        <p style={{ marginTop: "10px", fontSize: "0.9rem", opacity: 0.8 }}>
+          {totalCalculations} couples tested so far!
+        </p>
       </div>
 
       <div className="scrolling-list">
         {matches.map((match) => (
           <div key={match.id} className="match-item">
             <span className="match-names">
-              {/* Truncate names if they are too long */}
               {match.name1.length > 8 ? match.name1.substring(0,6)+"..." : match.name1} 
               {" + "} 
               {match.name2.length > 8 ? match.name2.substring(0,6)+"..." : match.name2}
@@ -65,7 +84,7 @@ const GlobalLoveWall = () => {
         ))}
         
         {matches.length === 0 && (
-          <p className="empty-msg">Be the first to test your love! 👇</p>
+          <p className="empty-msg">Loading Love Data... ⏳</p>
         )}
       </div>
     </motion.div>
