@@ -1,0 +1,65 @@
+.bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allows clicking buttons underneath */
+  z-index: -1; /* Puts it behind everything */
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffdee9 0%, #b5fffc 100%);
+  transition: background 1s ease;
+}
+
+/* Stormy background color change */
+.bg-container.stormy {
+  background: linear-gradient(135deg, #4b5563 0%, #1f2937 100%);
+}
+
+.petal {
+  position: absolute;
+  top: -10%;
+  opacity: 0.8;
+  animation: floatDown linear infinite;
+}
+
+/* Normal Floating Animation */
+@keyframes floatDown {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Windy Animation (Sideways & Fast) */
+.bg-container.windy .petal {
+  animation-name: windStorm;
+  animation-timing-function: ease-in;
+}
+
+@keyframes windStorm {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100vw, 120vh) rotate(720deg);
+    opacity: 0.5;
+  }
+}
+
+/* The dark overlay for sadness */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  pointer-events: none;
+  transition: opacity 1s ease;
+}

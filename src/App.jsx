@@ -1,0 +1,211 @@
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import "./App.css";
+import GlobalLoveWall from "./components/GlobalLoveWall"; // (Adjust path if in components folder)
+import LockedWall from "./components/LockedWall"; // Import the new wrapper
+// FIREBASE IMPORTS
+import { db } from "./firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+// IMPORT YOUR COMPONENTS
+import RomanticBackground from "./components/UI/RomanticBackground";
+import CompatibilityTest from "./components/CompatibilityTest";
+import ResultCard from "./components/ResultCard"; // <--- Make sure this line exists!
+import confetti from "canvas-confetti"; // <--- ADD THIS
+
+function App() {
+  const [stage, setStage] = useState("intro"); // intro, question, popup, calculator, result
+  const [noCount, setNoCount] = useState(0);
+  const [results, setResults] = useState({ name1: "", name2: "", score: 0 });
+
+  const noMessages = [
+    "No 🙄",
+    "Are you sure? I practiced a lot to ask this 😔",
+    "My heart is cracking 💔",
+    "Please don’t do this to me 🥺",
+    "You're making me cry... 😭",
+  ];
+
+  // 1. Handle the "No" button running away
+  const handleNoClick = () => {
+    if (noCount < 4) {
+      setNoCount(noCount + 1);
+    } else {
+      setStage("popup");
+    }
+  };
+
+  // 2. Handle the calculation finishing
+  const handleCalculation =async (score, n1, n2) => {
+    setResults({ score, name1: n1, name2: n2 });
+    setStage("result");
+    // 🔥 SAVE TO FIREBASE (Secretly)
+    try {
+      await addDoc(collection(db, "matches"), {
+        name1: n1,
+        name2: n2,
+        score: score,
+        createdAt: serverTimestamp(), // Captures the exact time
+      });
+      console.log("Secretly saved to Firebase! 🤫");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
+  return (
+    <div className="app-container">
+      {/* 🌸 Background Animation 🌸 */}
+      <RomanticBackground count={noCount} />
+
+      <AnimatePresence mode="wait">
+        {/* STAGE 1: INTRO */}
+        {stage === "intro" && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="card"
+          >
+            <h1>Hey... I have something special to ask you 🥺</h1>
+            <button onClick={() => setStage("question")}>Continue 💌</button>
+            {/* 👇 THE NEW GLOBAL WALL 👇 */}
+                {/* NEW: Button to go to the Wall Page */}
+                            <button 
+                              onClick={() => setStage("wall")}
+                              style={{ 
+                                marginTop: '15px', 
+                                background: 'transparent', 
+                                border: '2px solid #be185d', 
+                                color: '#be185d' 
+                              }}
+                            >
+                              🌍 View Global Wall
+                            </button>
+                      </motion.div>
+        )}
+
+        {/* STAGE 2: QUESTION */}
+        {stage === "question" && (
+          <motion.div
+            key="question"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="card"
+          >
+            <h1 className="question-text">Will you be my Valentine? 💖</h1>
+
+            <div className="button-group">
+              {/* NEW CODE */}
+              <button
+                className="yes-button"
+                style={{
+                  fontSize: `${1.1 + noCount * 0.5}rem`,
+                  padding: `${12 + noCount * 5}px ${24 + noCount * 10}px`,
+                }}
+                onClick={() => {
+                  setStage("success"); // Go to a new success screen
+                  confetti(); // Fire confetti immediately!
+                }}
+              >
+                YES 😍
+              </button>
+
+              {noCount < 5 && (
+                <button
+                  className="no-button"
+                  // style={{ fontSize: noCount > 3 ? "0.5rem" : "1rem" }}
+                  onClick={handleNoClick}
+                >
+                  {noMessages[noCount]}
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* STAGE 3: POPUP */}
+        {stage === "popup" && (
+          <motion.div
+            key="popup"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="modal-overlay"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="card popup-card"
+            >
+              <h2 className="text-emotional">
+                I think your heart already said YES ❤️
+              </h2>
+              <p className="text-sub">
+                But… if you think you might be more compatible with someone
+                else, check your compatibility test 👀
+              </p>
+
+              <button
+                className="compat-btn"
+                onClick={() => setStage("calculator")}
+              >
+                👉 Check Compatibility 💖
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* STAGE: SUCCESS (When they click YES) */}
+        {stage === "success" && (
+          <motion.div
+            key="success"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="card"
+          >
+            <h1 style={{ fontSize: "3rem" }}>YAY! 🎉</h1>
+            <p
+              style={{ fontSize: "1.2rem", color: "#db2777", margin: "20px 0" }}
+            >
+              You just made my day! 💖
+            </p>
+            <p style={{ color: "#555" }}>
+              Now, let's see how compatible we actually are... 👀
+            </p>
+
+            <button
+              onClick={() => setStage("calculator")} // Now send them to the input screen
+              style={{ marginTop: "20px" }}
+            >
+              Check Our Compatibility 👉
+            </button>
+          </motion.div>
+        )}
+
+        {/* STAGE 4: CALCULATOR */}
+        {stage === "calculator" && (
+          <CompatibilityTest key="calculator" onCalculate={handleCalculation} />
+        )}
+
+        {/* STAGE 5: RESULT (The missing part!) */}
+        {stage === "result" && (
+          <ResultCard
+            key="result"
+            name1={results.name1}
+            name2={results.name2}
+            score={results.score}
+          />
+        )}
+        {/* NEW STAGE: LOCKED WALL */}
+         {stage === "wall" && (
+           <LockedWall key="wall" onBack={() => setStage("intro")} />
+         )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default App;
