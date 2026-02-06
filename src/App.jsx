@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./App.css";
-import GlobalLoveWall from "./components/GlobalLoveWall"; // (Adjust path if in components folder)
-import LockedWall from "./components/LockedWall"; // Import the new wrapper
-// FIREBASE IMPORTS
+import GlobalLoveWall from "./components/GlobalLoveWall"; 
+import LockedWall from "./components/LockedWall"; 
 import { db } from "./firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-
-// IMPORT YOUR COMPONENTS
 import RomanticBackground from "./components/UI/RomanticBackground";
 import CompatibilityTest from "./components/CompatibilityTest";
-import ResultCard from "./components/ResultCard"; // <--- Make sure this line exists!
-import confetti from "canvas-confetti"; // <--- ADD THIS
+import ResultCard from "./components/ResultCard"; 
+import confetti from "canvas-confetti"; 
 
 function App() {
-  const [stage, setStage] = useState("intro"); // intro, question, popup, calculator, result
+  const [stage, setStage] = useState("intro"); // intro, question, popup, calculator, result, wall
   const [noCount, setNoCount] = useState(0);
   const [results, setResults] = useState({ name1: "", name2: "", score: 0 });
 
@@ -26,7 +23,6 @@ function App() {
     "You're making me cry... 😭",
   ];
 
-  // 1. Handle the "No" button running away
   const handleNoClick = () => {
     if (noCount < 4) {
       setNoCount(noCount + 1);
@@ -35,17 +31,17 @@ function App() {
     }
   };
 
-  // 2. Handle the calculation finishing
-  const handleCalculation =async (score, n1, n2) => {
+  const handleCalculation = async (score, n1, n2) => {
     setResults({ score, name1: n1, name2: n2 });
     setStage("result");
+    
     // 🔥 SAVE TO FIREBASE (Secretly)
     try {
       await addDoc(collection(db, "matches"), {
         name1: n1,
         name2: n2,
         score: score,
-        createdAt: serverTimestamp(), // Captures the exact time
+        createdAt: serverTimestamp(),
       });
       console.log("Secretly saved to Firebase! 🤫");
     } catch (e) {
@@ -55,7 +51,6 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* 🌸 Background Animation 🌸 */}
       <RomanticBackground count={noCount} />
 
       <AnimatePresence mode="wait">
@@ -70,20 +65,8 @@ function App() {
           >
             <h1>Hey... I have something special to ask you 🥺</h1>
             <button onClick={() => setStage("question")}>Continue 💌</button>
-            {/* 👇 THE NEW GLOBAL WALL 👇 */}
-                {/* NEW: Button to go to the Wall Page */}
-                            <button 
-                              onClick={() => setStage("wall")}
-                              style={{ 
-                                marginTop: '15px', 
-                                background: 'transparent', 
-                                border: '2px solid #be185d', 
-                                color: '#be185d' 
-                              }}
-                            >
-                              🌍 View Global Wall
-                            </button>
-                      </motion.div>
+            {/* 🗑️ REMOVED GLOBAL WALL BUTTON FROM HERE */}
+          </motion.div>
         )}
 
         {/* STAGE 2: QUESTION */}
@@ -98,7 +81,6 @@ function App() {
             <h1 className="question-text">Will you be my Valentine? 💖</h1>
 
             <div className="button-group">
-              {/* NEW CODE */}
               <button
                 className="yes-button"
                 style={{
@@ -106,8 +88,8 @@ function App() {
                   padding: `${12 + noCount * 5}px ${24 + noCount * 10}px`,
                 }}
                 onClick={() => {
-                  setStage("success"); // Go to a new success screen
-                  confetti(); // Fire confetti immediately!
+                  setStage("success"); 
+                  confetti(); 
                 }}
               >
                 YES 😍
@@ -116,7 +98,6 @@ function App() {
               {noCount < 5 && (
                 <button
                   className="no-button"
-                  // style={{ fontSize: noCount > 3 ? "0.5rem" : "1rem" }}
                   onClick={handleNoClick}
                 >
                   {noMessages[noCount]}
@@ -158,7 +139,7 @@ function App() {
           </motion.div>
         )}
 
-        {/* STAGE: SUCCESS (When they click YES) */}
+        {/* STAGE: SUCCESS */}
         {stage === "success" && (
           <motion.div
             key="success"
@@ -167,9 +148,7 @@ function App() {
             className="card"
           >
             <h1 style={{ fontSize: "3rem" }}>YAY! 🎉</h1>
-            <p
-              style={{ fontSize: "1.2rem", color: "#db2777", margin: "20px 0" }}
-            >
+            <p style={{ fontSize: "1.2rem", color: "#db2777", margin: "20px 0" }}>
               You just made my day! 💖
             </p>
             <p style={{ color: "#555" }}>
@@ -177,7 +156,7 @@ function App() {
             </p>
 
             <button
-              onClick={() => setStage("calculator")} // Now send them to the input screen
+              onClick={() => setStage("calculator")}
               style={{ marginTop: "20px" }}
             >
               Check Our Compatibility 👉
@@ -190,19 +169,22 @@ function App() {
           <CompatibilityTest key="calculator" onCalculate={handleCalculation} />
         )}
 
-        {/* STAGE 5: RESULT (The missing part!) */}
+        {/* STAGE 5: RESULT */}
         {stage === "result" && (
           <ResultCard
             key="result"
             name1={results.name1}
             name2={results.name2}
             score={results.score}
+            // 👇 PASSING THE FUNCTION TO SWITCH TO WALL
+            onViewWall={() => setStage("wall")} 
           />
         )}
+
         {/* NEW STAGE: LOCKED WALL */}
-         {stage === "wall" && (
-           <LockedWall key="wall" onBack={() => setStage("intro")} />
-         )}
+        {stage === "wall" && (
+          <LockedWall key="wall" onBack={() => setStage("intro")} />
+        )}
       </AnimatePresence>
     </div>
   );

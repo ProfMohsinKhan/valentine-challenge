@@ -4,23 +4,21 @@ import confetti from "canvas-confetti";
 import html2canvas from "html2canvas";
 
 // ---------------------------------------------------------
-// 📸 PASTE YOUR GIF LINKS HERE
+// 📸 GIF LINKS
 // ---------------------------------------------------------
 const GIFS = {
-  perfect: "https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyY2ZrdWJjNmtsa2hpZTQyMXUwbTYzNzFuNDFwa2VmMWdocmdqbGl5dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/s6fnVyWTfM2nUKuMVY/giphy.gif", // Score 100 (Soulmates)
-  high:    "https://media.tenor.com/WQjlw86rlpsAAAAM/muah-kiss.gif", // Score 85-99 (Love is in the air)
-  good:    "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif", // Score 70-84 (Solid couple)
-  average: "https://media.tenor.com/sZqS55mgR3QAAAAj/jealous.gif", // Score < 70 (Funny/Awkward)
-  bad: "https://media.tenor.com/f8YmpuCCXJcAAAAM/roasted-oh.gif", // Score < 70 (Funny/Awkward)
-  
+  perfect: "https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyY2ZrdWJjNmtsa2hpZTQyMXUwbTYzNzFuNDFwa2VmMWdocmdqbGl5dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/s6fnVyWTfM2nUKuMVY/giphy.gif",
+  high:    "https://media.tenor.com/WQjlw86rlpsAAAAM/muah-kiss.gif",
+  good:    "https://media.giphy.com/media/3o7TKoWXm3okO1kgHC/giphy.gif",
+  average: "https://media.tenor.com/sZqS55mgR3QAAAAj/jealous.gif",
+  bad:     "https://media.tenor.com/f8YmpuCCXJcAAAAM/roasted-oh.gif",
 };
-// ---------------------------------------------------------
 
-const ResultCard = ({ name1, name2, score }) => {
+// 👇 ADDED 'onViewWall' TO PROPS
+const ResultCard = ({ name1, name2, score, onViewWall }) => {
   const [loading, setLoading] = useState(true);
   const cardRef = useRef(null);
 
-  // Determine the Data (Text, Color, GIF) based on score
   const getResultData = () => {
     if (score == 100) {
       return { 
@@ -42,7 +40,8 @@ const ResultCard = ({ name1, name2, score }) => {
         color: "#64873a", 
         gif: GIFS.good 
       };
-    }if (score >= 60) {
+    }
+    if (score >= 60) {
       return { 
         text: "ok Connection! 🥰 , kehte hai pyaar mei neend udd jaati hai... koi humse bhi mohabbat kare ... kambhatk neend bohut aati hai", 
         color: "#db2777", 
@@ -61,8 +60,6 @@ const ResultCard = ({ name1, name2, score }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-
-      // Only fire confetti for good scores
       if (score >= 70) {
         confetti({
           particleCount: 150,
@@ -77,13 +74,12 @@ const ResultCard = ({ name1, name2, score }) => {
 
   const handleShare = async () => {
     if (cardRef.current) {
-      // Small delay to ensure images are rendered
       setTimeout(async () => {
          try {
             const canvas = await html2canvas(cardRef.current, {
               backgroundColor: "#fff5f7",
               scale: 2, 
-              useCORS: true, // IMPORTANT: Allows saving images from the web
+              useCORS: true,
               allowTaint: true,
             });
             const image = canvas.toDataURL("image/png");
@@ -93,7 +89,7 @@ const ResultCard = ({ name1, name2, score }) => {
             link.click();
          } catch (err) {
             console.error("Screenshot failed:", err);
-            alert("Could not save image (browser security blocked the GIF). Try taking a screenshot manually!");
+            alert("Could not save image.");
          }
       }, 500)
     }
@@ -119,7 +115,6 @@ const ResultCard = ({ name1, name2, score }) => {
       >
         <h3>Compatibility Report 💌</h3>
 
-        {/* --- DYNAMIC GIF SECTION --- */}
         <motion.div 
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -133,7 +128,7 @@ const ResultCard = ({ name1, name2, score }) => {
             <img 
                 src={gif} 
                 alt="Reaction Gif"
-                crossOrigin="anonymous" // Helps with screenshotting
+                crossOrigin="anonymous"
                 style={{ 
                     maxWidth: '100%',
                     height: '140px', 
@@ -160,11 +155,29 @@ const ResultCard = ({ name1, name2, score }) => {
         <p className="footer-text">Official Valentine Verification ✅</p>
       </motion.div>
 
-      <button onClick={handleShare} className="share-btn">
-        Share Result 📸
-      </button>
+      {/* BUTTONS GROUP */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', alignItems: 'center', marginTop: '10px' }}>
+        
+        <button onClick={handleShare} className="share-btn" style={{width: '100%'}}>
+          Share Result 📸
+        </button>
+
+        {/* 👇 NEW BUTTON TO VIEW WALL */}
+        <button 
+          onClick={onViewWall}
+          style={{ 
+            background: 'transparent', 
+            border: '2px solid #be185d', 
+            color: '#be185d',
+            width: '100%'
+          }}
+        >
+          🌍 View Global Wall
+        </button>
+
+      </div>
     </div>
   );
 };
 
-export default ResultCard;  
+export default ResultCard;
