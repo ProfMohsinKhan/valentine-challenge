@@ -16,7 +16,9 @@ const CompatibilityTest = ({ onCalculate }) => {
     // Check if the names match "mohsin khan" and "zeenat khan" in either order
     const isMohsinAndZeenat =
       (n1Clean === "mohsin khan" && n2Clean === "zeenat khan") ||
-      (n1Clean === "zeenat khan" && n2Clean === "mohsin khan");
+      (n1Clean === "zeenat khan" && n2Clean === "mohsin khan") ||
+      (n1Clean === "mohsin khan" && n2Clean === "alyana khan") ||
+      (n1Clean === "alyana khan" && n2Clean === "mohsin khan") ;
 
     if (isMohsinAndZeenat) {
       onCalculate(100, name1, name2);
