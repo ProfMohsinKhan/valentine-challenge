@@ -71,7 +71,7 @@ const CompatibilityTest = ({ onCalculate }) => {
       <div className="input-group">
         <input
           type="text"
-          placeholder="Your Full Name"
+          placeholder="Your FirstName+Lastname"
           value={name1}
           onChange={(e) => setName1(e.target.value)}
         />
@@ -83,7 +83,7 @@ const CompatibilityTest = ({ onCalculate }) => {
         />
         <input
           type="text"
-          placeholder="Crush Full Name"
+          placeholder="Crush FirstName+Lastname"
           value={name2}
           onChange={(e) => setName2(e.target.value)}
         />
