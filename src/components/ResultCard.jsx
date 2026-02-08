@@ -159,7 +159,7 @@ const ResultCard = ({ name1, name2, score, onViewWall }) => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', alignItems: 'center', marginTop: '10px' }}>
         
         <button onClick={handleShare} className="share-btn" style={{width: '100%'}}>
-          Share Result 📸
+          <a href="https://pbs.twimg.com/media/G3pBT_PXkAAyVDC.jpg">Share Result 📸</a>
         </button>
 
         {/* 👇 NEW BUTTON TO VIEW WALL */}

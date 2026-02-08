@@ -9,8 +9,10 @@ import RomanticBackground from "./components/UI/RomanticBackground";
 import CompatibilityTest from "./components/CompatibilityTest";
 import ResultCard from "./components/ResultCard"; 
 import confetti from "canvas-confetti"; 
+import AdminPanel from "./components/AdminPanel"; // Import the new component
 
 function App() {
+  
   const [stage, setStage] = useState("intro"); // intro, question, popup, calculator, result, wall
   const [noCount, setNoCount] = useState(0);
   const [results, setResults] = useState({ name1: "", name2: "", score: 0 });
@@ -66,8 +68,19 @@ function App() {
             <h1>Hey... I have something special to ask you 🥺</h1>
             <button onClick={() => setStage("question")}>Continue 💌</button>
             {/* 🗑️ REMOVED GLOBAL WALL BUTTON FROM HERE */}
+            {/* 👇 1. ADD THIS SECRET ADMIN LINK 👇 */}
+            <div style={{ marginTop: '20px', opacity: 0.3 }}>
+              <span 
+                onClick={() => setStage("admin")}
+                style={{ cursor: 'pointer', fontSize: '0.8rem', color: '#be185d' }}
+              >
+                Admin Login 🔒
+              </span>
+            </div>
+            
           </motion.div>
         )}
+
 
         {/* STAGE 2: QUESTION */}
         {stage === "question" && (
@@ -185,6 +198,12 @@ function App() {
         {stage === "wall" && (
           <LockedWall key="wall" onBack={() => setStage("intro")} />
         )}
+
+          {/* 👇 2. ADD THIS NEW ADMIN STAGE 👇 */}
+        {stage === "admin" && (
+           <AdminPanel key="admin" onBack={() => setStage("intro")} />
+        )}
+        
       </AnimatePresence>
     </div>
   );
